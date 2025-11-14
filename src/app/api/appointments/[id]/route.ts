@@ -1,12 +1,13 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 
 import { updateAppointment } from '@/data/mock-db';
 
 export async function PUT(
-  request: Request,
-  { params }: { params: { id: string } },
+  request: NextRequest,
+  context: { params: Promise<{ id: string }> },
 ) {
-  const id = Number(params.id);
+  const { id } = await context.params;
+  const numericId = Number(id);
   const body = await request.json();
   const { start, end } = body ?? {};
 
@@ -20,7 +21,7 @@ export async function PUT(
   const [startDate, startTime] = start.split('T');
   const [, endTime] = end.split('T');
 
-  const updated = updateAppointment(id, {
+  const updated = updateAppointment(numericId, {
     date: startDate,
     startTime: startTime?.slice(0, 5),
     endTime: endTime?.slice(0, 5),
