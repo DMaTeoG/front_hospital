@@ -1,0 +1,18 @@
+import { NextResponse } from 'next/server';
+
+import { mockDb, paginate } from '@/data/mock-db';
+
+export async function GET(request: Request) {
+  const url = new URL(request.url);
+  const page = Number(url.searchParams.get('page') ?? '1');
+  const pageSize = Number(url.searchParams.get('pageSize') ?? '20');
+
+  const items = mockDb.schedules.map((schedule) => ({
+    id: schedule.id,
+    name: schedule.name,
+    email: schedule.owner,
+    status: schedule.status,
+  }));
+
+  return NextResponse.json(paginate(items, page, pageSize));
+}
